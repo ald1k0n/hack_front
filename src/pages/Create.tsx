@@ -159,6 +159,7 @@ export default function Create() {
 			</Box>
 
 			<Snackbar
+				onClose={() => setResp(null)}
 				open={!!resp}
 				message={
 					'Контент является не допустимым для публикации, ваш пост будет проверен администрацией платформы'

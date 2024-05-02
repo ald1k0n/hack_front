@@ -59,7 +59,7 @@ export default function Posts() {
 				onClose={() => setIsDialOpen(false)}
 				ariaLabel='Меню'
 				icon={<SpeedDialIcon />}
-				sx={{ position: 'absolute', bottom: 16, right: 16 }}>
+				sx={{ position: 'fixed', bottom: 16, right: 16 }}>
 				<SpeedDialAction
 					onClick={() => navigate('/')}
 					icon={<AddIcon />}
