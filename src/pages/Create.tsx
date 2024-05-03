@@ -9,12 +9,16 @@ import {
 	Snackbar,
 	Backdrop,
 	CircularProgress,
+	SpeedDial,
+	SpeedDialAction,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAtom, atom } from 'jotai';
 import { uploadItem } from '../shared/atoms';
 import { PostData } from '../shared/endpoints';
-
+import PhotoIcon from '@mui/icons-material/Photo';
+import { useEffect, useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 
 const VisuallyHiddenInput = styled('input')({
@@ -36,21 +40,33 @@ const responseAtom = atom<{
 const loadingAtom = atom<boolean>(false);
 
 export default function Create() {
-	const [image, setImage] = useAtom(uploadItem);
+	const [file, setFile] = useAtom(uploadItem);
 	const [content, setContent] = useAtom(textAtom);
 	const [resp, setResp] = useAtom(responseAtom);
 	const [isLoading, setIsLoading] = useAtom(loadingAtom);
 	const navigate = useNavigate();
+
+	const [isDialOpen, setIsDialOpen] = useState<boolean>(false);
+
+	useEffect(() => {
+		setContent(null);
+		setResp(null);
+		setFile(null);
+	}, []);
+
 	const uploadImage = async (e: any) => {
+		setIsLoading(true);
 		const formData = new FormData();
 		formData.append('file', e.target.files[0]);
 		const imageUrl = await PostData('/upload', formData);
-		setImage(imageUrl);
+		setFile(imageUrl);
+		setIsLoading(false);
 	};
 
 	const handleCreate = async () => {
 		const payload = {
-			image: image || null,
+			image: file?.includes('image') ? file : null,
+			video: file?.includes('video') ? file : null,
 			text: content,
 		};
 		setIsLoading(true);
@@ -58,13 +74,13 @@ export default function Create() {
 		setIsLoading(false);
 		if (response?.message) {
 			setResp(response?.message);
+			setContent(null);
+			setFile(null);
 		} else {
 			navigate('/posts', {
 				replace: true,
 			});
 		}
-		setContent(null);
-		setImage(null);
 	};
 
 	return (
@@ -104,15 +120,28 @@ export default function Create() {
 								height: '300px',
 								marginBottom: 8,
 							}}>
-							{image && (
-								<img
-									style={{
-										width: '100%',
-										height: '100%',
-										objectFit: 'contain',
-									}}
-									src={image}
-								/>
+							{file && (
+								<>
+									{file?.includes('image') ? (
+										<img
+											style={{
+												width: '100%',
+												height: '100%',
+												objectFit: 'contain',
+											}}
+											src={file}
+										/>
+									) : (
+										<video
+											style={{
+												width: '100%',
+												height: '100%',
+												objectFit: 'contain',
+											}}
+											src={file!}
+											autoPlay></video>
+									)}
+								</>
 							)}
 						</Paper>
 
@@ -128,7 +157,7 @@ export default function Create() {
 								component='label'
 								variant='contained'
 								tabIndex={-1}>
-								Загрузить изображение
+								Загрузить контент
 								<VisuallyHiddenInput
 									type='file'
 									onChange={uploadImage}
@@ -171,6 +200,19 @@ export default function Create() {
 				open={isLoading}>
 				<CircularProgress color='inherit' />
 			</Backdrop>
+
+			<SpeedDial
+				onOpen={() => setIsDialOpen(true)}
+				onClose={() => setIsDialOpen(false)}
+				ariaLabel='Меню'
+				icon={<MenuIcon />}
+				sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+				<SpeedDialAction
+					onClick={() => navigate('/posts')}
+					icon={<PhotoIcon />}
+					tooltipTitle='Посты'
+				/>
+			</SpeedDial>
 		</>
 	);
 }

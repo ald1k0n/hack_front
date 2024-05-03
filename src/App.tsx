@@ -6,7 +6,7 @@ const PostsPage = lazy(() => import('./pages/Posts'));
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Backdrop, CircularProgress, Typography } from '@mui/material';
 
 const darkTheme = createTheme({
 	palette: {
@@ -25,6 +25,13 @@ function App() {
 							<CircularProgress color='inherit' />
 						</Backdrop>
 					}>
+					<Typography
+						variant='h4'
+						sx={{
+							textAlign: 'center',
+						}}>
+						ABAS
+					</Typography>
 					<Routes>
 						<Route
 							path='/'

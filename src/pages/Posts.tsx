@@ -37,7 +37,7 @@ export default function Posts() {
 	}, []);
 
 	return (
-		<Container maxWidth='md'>
+		<Container maxWidth='sm'>
 			{posts?.map((post) => (
 				<Card
 					key={post?.id}
@@ -48,8 +48,25 @@ export default function Posts() {
 							image={`http://localhost:8080/api/image/${post?.image_id}`}
 						/>
 					)}
+					{post?.video_id && (
+						<video
+							autoPlay
+							muted
+							loop
+							style={{
+								width: '100%',
+								height: 350,
+							}}
+							src={`http://localhost:8080/api/video/${post?.video_id}`}></video>
+					)}
 					<CardContent>
-						<Typography variant='caption'>{post?.text}</Typography>
+						<Typography
+							variant='caption'
+							sx={{
+								textAlign: 'center',
+							}}>
+							{post?.text}
+						</Typography>
 					</CardContent>
 				</Card>
 			))}
